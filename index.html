@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graficador de Curvas de Titulación para Autocorrección</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7f8;
+      --panel: #ffffff;
+      --primary: #0f5c6e;
+      --primary-dark: #0a3f4c;
+      --accent: #2d9cdb;
+      --muted: #60757d;
+      --border: #d7e1e5;
+      --warning: #b86e00;
+      --ok: #1f7a4d;
+      --danger: #b63b3b;
+      --text: #1f2d33;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #e8f2f5 0%, #f7fafb 55%, #eef7f8 100%);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      padding: 24px 32px;
+      border-bottom: 5px solid #7bc6d6;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      letter-spacing: 0.2px;
+    }
+
+    header p {
+      margin: 4px 0;
+      color: #dceff4;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1380px;
+      margin: 24px auto;
+      padding: 0 20px 32px;
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 22px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px 0;
+      font-size: 19px;
+      color: var(--primary-dark);
+    }
+
+    .panel h3 {
+      margin: 22px 0 10px 0;
+      font-size: 15px;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 5px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #30464d;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: #fbfdfe;
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(45, 156, 219, 0.14);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 0.08s ease, opacity 0.12s ease;
+    }
+
+    button:hover { opacity: 0.94; }
+    button:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e4eef1;
+      color: var(--primary-dark);
+    }
+
+    .btn-full { grid-column: 1 / -1; }
+
+    .hidden { display: none !important; }
+
+    .main-grid {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 18px;
+    }
+
+    #chart {
+      min-height: 560px;
+      width: 100%;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      background: #f6fafb;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .metric .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .metric .value {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .note {
+      background: #f8fbfc;
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #385159;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .warning {
+      border-left-color: var(--warning);
+      background: #fff8ed;
+    }
+
+    .ok {
+      border-left-color: var(--ok);
+      background: #effaf4;
+    }
+
+    .danger {
+      border-left-color: var(--danger);
+      background: #fff1f1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px;
+      text-align: right;
+    }
+
+    th {
+      background: #edf5f7;
+      color: var(--primary-dark);
+    }
+
+    td:first-child, th:first-child { text-align: left; }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    .inline-help {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    footer {
+      max-width: 1380px;
+      margin: 0 auto 28px;
+      padding: 0 20px;
+      color: #6b7f86;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    @media (max-width: 980px) {
+      .container { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      header { padding: 20px; }
+      header h1 { font-size: 22px; }
+      .row, .buttons, .info-grid { grid-template-columns: 1fr; }
+      #chart { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Graficador de Curvas de Titulación para Autocorrección</h1>
+    <p>Química Analítica · Métodos volumétricos húmedos</p>
+    <p>Ing. Juan M. Alderete · Facultad de Ingeniería y Ciencias Exactas · UADE</p>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h2>Configuración de la valoración</h2>
+
+      <label for="tipoValoracion">Tipo de valoración</label>
+      <select id="tipoValoracion" onchange="actualizarInterfaz()">
+        <option value="acidobase">Ácido–base</option>
+        <option value="precipitacion">Precipitación / Argentimetría</option>
+        <option value="edta">Complejométrica con EDTA</option>
+        <option value="redox">Redox</option>
+      </select>
+
+      <div id="grupoAcidoBase">
+        <label for="subtipoAcidoBase">Sistema ácido–base</label>
+        <select id="subtipoAcidoBase" onchange="actualizarInterfaz()">
+          <option value="fuerte_fuerte">Ácido fuerte / Base fuerte</option>
+          <option value="acido_debil_base_fuerte">Ácido débil monoprótico / Base fuerte</option>
+          <option value="base_debil_acido_fuerte">Base débil monoprótica / Ácido fuerte</option>
+          <option value="acido_diprotico_base_fuerte">Ácido diprótico / Base fuerte</option>
+          <option value="acido_triprotico_base_fuerte">Ácido triprótico / Base fuerte</option>
+          <option value="carbonato_acido_fuerte">Carbonato / Ácido fuerte</option>
+        </select>
+      </div>
+
+      <div id="grupoPrecipitacion" class="hidden">
+        <label for="subtipoPrecipitacion">Sistema de precipitación</label>
+        <select id="subtipoPrecipitacion" onchange="actualizarInterfaz()">
+          <option value="directa">Precipitación directa 1:1</option>
+          <option value="mohr">Método de Mohr</option>
+          <option value="volhard">Método de Volhard, retroceso</option>
+        </select>
+
+        <label for="salPrecipitacion">Par de precipitación</label>
+        <select id="salPrecipitacion">
+          <option value="AgCl" data-kps="1.8e-10">AgCl, Kps = 1,8 × 10⁻¹⁰</option>
+          <option value="AgBr" data-kps="5.0e-13">AgBr, Kps = 5,0 × 10⁻¹³</option>
+          <option value="AgI" data-kps="8.3e-17">AgI, Kps = 8,3 × 10⁻¹⁷</option>
+          <option value="AgSCN" data-kps="1.0e-12">AgSCN, Kps = 1,0 × 10⁻¹²</option>
+        </select>
+      </div>
+
+      <div id="grupoEdta" class="hidden">
+        <label for="metalEdta">Metal a valorar</label>
+        <select id="metalEdta">
+          <option value="Ca">Ca²⁺</option>
+          <option value="Mg">Mg²⁺</option>
+          <option value="Zn">Zn²⁺</option>
+          <option value="Cu">Cu²⁺</option>
+          <option value="generico">Mⁿ⁺ genérico</option>
+        </select>
+        <label for="kfCondicional">Kf condicional, Kf'</label>
+        <input id="kfCondicional" type="number" step="any" value="1e10" />
+        <div class="inline-help">Para esta versión se usa Kf' condicional, no el equilibrio ácido–base completo del EDTA.</div>
+      </div>
+
+      <div id="grupoRedox" class="hidden">
+        <label for="subtipoRedox">Sistema redox</label>
+        <select id="subtipoRedox" onchange="actualizarInterfaz()">
+          <option value="fe_ce">Fe²⁺ / Ce⁴⁺ en medio ácido</option>
+          <option value="fe_mno4">Fe²⁺ / MnO₄⁻ en medio ácido</option>
+          <option value="i2_tiosulfato">I₂ / S₂O₃²⁻</option>
+          <option value="generico_redox">Redox genérico 1:1</option>
+        </select>
+        <div class="row">
+          <div>
+            <label for="eAnalito">E° par analito (V)</label>
+            <input id="eAnalito" type="number" step="any" value="0.771" />
+          </div>
+          <div>
+            <label for="eValorante">E° par valorante (V)</label>
+            <input id="eValorante" type="number" step="any" value="1.610" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="nAnalitoRedox">n electrones par analito</label>
+            <input id="nAnalitoRedox" type="number" step="any" value="1" />
+          </div>
+          <div>
+            <label for="nValoranteRedox">n electrones par valorante</label>
+            <input id="nValoranteRedox" type="number" step="any" value="1" />
+          </div>
+        </div>
+        <label for="esteqRedox">Relación molar valorante/analito en equivalencia</label>
+        <input id="esteqRedox" type="number" step="any" value="1" />
+        <div class="inline-help">Ejemplo: Fe²⁺/MnO₄⁻ requiere 1 mol de MnO₄⁻ cada 5 mol de Fe²⁺, por lo tanto la relación valorante/analito es 0,2.</div>
+      </div>
+
+      <h3>Orientación experimental</h3>
+      <label for="orientacion">¿Qué solución está en la bureta?</label>
+      <select id="orientacion">
+        <option value="valorante_bureta">Valorante en bureta / solución valorada en erlenmeyer</option>
+        <option value="valorado_bureta">Solución valorada en bureta / valorante en erlenmeyer</option>
+      </select>
+      <div class="inline-help">El eje X siempre representa el volumen agregado desde la bureta. Por eso, al invertir bureta y erlenmeyer puede cambiar la orientación de la curva.</div>
+
+      <h3>Datos de concentración y volumen</h3>
+      <div class="row">
+        <div>
+          <label for="cAnalito">Concentración solución valorada (mol/L)</label>
+          <input id="cAnalito" type="number" step="any" value="0.100" />
+        </div>
+        <div>
+          <label for="vAnalito">Volumen solución valorada (mL)</label>
+          <input id="vAnalito" type="number" step="any" value="25.00" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="cValorante">Concentración valorante (mol/L)</label>
+          <input id="cValorante" type="number" step="any" value="0.100" />
+        </div>
+        <div>
+          <label for="vMax">Volumen máximo desde bureta (mL)</label>
+          <input id="vMax" type="number" step="any" value="50.00" />
+        </div>
+      </div>
+
+      <div id="grupoKa">
+        <label for="kaKb">Ka o Kb principal, según corresponda</label>
+        <input id="kaKb" type="number" step="any" value="1.8e-5" />
+        <div id="grupoKaMultiples" class="hidden">
+          <div class="row">
+            <div>
+              <label for="ka2">Ka₂</label>
+              <input id="ka2" type="number" step="any" value="6.2e-8" />
+            </div>
+            <div>
+              <label for="ka3">Ka₃</label>
+              <input id="ka3" type="number" step="any" value="4.8e-13" />
+            </div>
+          </div>
+          <div class="inline-help">Para ácidos dipróticos/tripróticos y carbonatos se resuelve el equilibrio mediante balance de masa, balance de carga y constantes de disociación.</div>
+        </div>
+      </div>
+
+      <div id="grupoVolhard" class="hidden">
+        <h3>Datos específicos de Volhard</h3>
+        <label for="vAgExceso">Volumen de AgNO₃ agregado inicialmente en exceso (mL)</label>
+        <input id="vAgExceso" type="number" step="any" value="35.00" />
+        <label for="cAgExceso">Concentración de AgNO₃ agregado inicialmente (mol/L)</label>
+        <input id="cAgExceso" type="number" step="any" value="0.100" />
+        <label for="kpsAgSCN">Kps de AgSCN</label>
+        <input id="kpsAgSCN" type="number" step="any" value="1.0e-12" />
+        <div class="inline-help">En Volhard se grafica la valoración del exceso de Ag⁺ remanente con SCN⁻.</div>
+      </div>
+
+      <h3>Interpolación manual</h3>
+      <label for="vInterpolar">Volumen desde bureta para interpolar (mL)</label>
+      <input id="vInterpolar" type="number" step="any" value="12.50" />
+
+      <div class="buttons">
+        <button class="btn-primary" onclick="generar()">Generar curva</button>
+        <button class="btn-secondary" onclick="interpolarManual()">Interpolar</button>
+        <button class="btn-secondary btn-full" onclick="cargarEjemplo()">Cargar ejemplo didáctico</button>
+      </div>
+
+      <p class="small">Versión inicial: usa modelos didácticos simplificados y robustos para autocorrección. En EDTA se usa Kf' condicional; en Mohr se marca la zona de equivalencia de Ag⁺/haluro sin simular cromato en detalle.</p>
+    </section>
+
+    <section class="main-grid">
+      <div class="panel">
+        <div id="chart"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Resultados principales</h2>
+        <div class="info-grid">
+          <div class="metric">
+            <div class="label">Variable graficada</div>
+            <div class="value" id="metricVariable">—</div>
+          </div>
+          <div class="metric">
+            <div class="label">Volumen equivalente</div>
+            <div class="value" id="metricVe">—</div>
+          </div>
+          <div class="metric">
+            <div class="label">Valor interpolado</div>
+            <div class="value" id="metricInterp">—</div>
+          </div>
+          <div class="metric">
+            <div class="label">Orientación</div>
+            <div class="value" id="metricOrientacion">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Interpretación para autocorrección</h2>
+        <div id="interpretacion" class="note">Seleccione el sistema, cargue los datos y genere la curva.</div>
+        <div id="tablaPuntos"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Graficador didáctico para Química Analítica · Métodos volumétricos húmedos
+  </footer>
+
+  <script>
+    let datosActuales = null;
+    let puntoInterpolado = null;
+
+    function log10(x) { return Math.log(x) / Math.LN10; }
+    function clamp(x, min) { return Math.max(x, min); }
+    function fmt(x, d = 3) {
+      if (!isFinite(x)) return "—";
+      if (Math.abs(x) >= 1000 || Math.abs(x) < 0.001 && x !== 0) return x.toExponential(3);
+      return x.toFixed(d);
+    }
+    function mol(c, vMl) { return c * vMl / 1000; }
+    function getNum(id) { return parseFloat(document.getElementById(id).value); }
+
+    function actualizarInterfaz() {
+      const tipo = document.getElementById("tipoValoracion").value;
+      const subtipoPre = document.getElementById("subtipoPrecipitacion").value;
+
+      document.getElementById("grupoAcidoBase").classList.toggle("hidden", tipo !== "acidobase");
+      document.getElementById("grupoPrecipitacion").classList.toggle("hidden", tipo !== "precipitacion");
+      document.getElementById("grupoEdta").classList.toggle("hidden", tipo !== "edta");
+      document.getElementById("grupoRedox").classList.toggle("hidden", tipo !== "redox");
+      document.getElementById("grupoKa").classList.toggle("hidden", tipo !== "acidobase");
+      const subAB = document.getElementById("subtipoAcidoBase").value;
+      const multiAB = ["acido_diprotico_base_fuerte", "acido_triprotico_base_fuerte", "carbonato_acido_fuerte"].includes(subAB);
+      document.getElementById("grupoKaMultiples").classList.toggle("hidden", !multiAB);
+      document.getElementById("grupoVolhard").classList.toggle("hidden", !(tipo === "precipitacion" && subtipoPre === "volhard"));
+      if (tipo === "redox") cargarParametrosRedox();
+    }
+
+    function cargarEjemplo() {
+      const tipo = document.getElementById("tipoValoracion").value;
+      if (tipo === "acidobase") {
+        document.getElementById("subtipoAcidoBase").value = "acido_debil_base_fuerte";
+        document.getElementById("cAnalito").value = "0.100";
+        document.getElementById("vAnalito").value = "25.00";
+        document.getElementById("cValorante").value = "0.100";
+        document.getElementById("vMax").value = "50.00";
+        document.getElementById("kaKb").value = "1.8e-5";
+        document.getElementById("vInterpolar").value = "12.50";
+      } else if (tipo === "precipitacion") {
+        document.getElementById("subtipoPrecipitacion").value = "mohr";
+        document.getElementById("cAnalito").value = "0.050";
+        document.getElementById("vAnalito").value = "25.00";
+        document.getElementById("cValorante").value = "0.050";
+        document.getElementById("vMax").value = "50.00";
+        document.getElementById("vInterpolar").value = "20.00";
+      } else if (tipo === "edta") {
+        document.getElementById("cAnalito").value = "0.010";
+        document.getElementById("vAnalito").value = "50.00";
+        document.getElementById("cValorante").value = "0.010";
+        document.getElementById("vMax").value = "100.00";
+        document.getElementById("kfCondicional").value = "1e10";
+        document.getElementById("vInterpolar").value = "25.00";
+      } else {
+        document.getElementById("subtipoRedox").value = "fe_ce";
+        cargarParametrosRedox();
+        document.getElementById("cAnalito").value = "0.100";
+        document.getElementById("vAnalito").value = "25.00";
+        document.getElementById("cValorante").value = "0.100";
+        document.getElementById("vMax").value = "50.00";
+        document.getElementById("vInterpolar").value = "24.00";
+      }
+      actualizarInterfaz();
+      generar();
+    }
+
+    function generarVolumenes(vMax, n = 501) {
+      const xs = [];
+      for (let i = 0; i < n; i++) xs.push(vMax * i / (n - 1));
+      return xs;
+    }
+
+    function sistemaBureta(vb) {
+      const orientacion = document.getElementById("orientacion").value;
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cValorante = getNum("cValorante");
+
+      if (orientacion === "valorante_bureta") {
+        return {
+          nAnalitoInicial: mol(cAnalito, vAnalito),
+          nValoranteAgregado: mol(cValorante, vb),
+          vTotalMl: vAnalito + vb,
+          descripcion: "convencional"
+        };
+      }
+      return {
+        nAnalitoInicial: mol(cValorante, vAnalito),
+        nValoranteAgregado: mol(cAnalito, vb),
+        vTotalMl: vAnalito + vb,
+        descripcion: "invertida"
+      };
+    }
+
+    function calcularAcidoBase() {
+      const subtipo = document.getElementById("subtipoAcidoBase").value;
+      if (["acido_diprotico_base_fuerte", "acido_triprotico_base_fuerte", "carbonato_acido_fuerte"].includes(subtipo)) {
+        return calcularAcidoBaseMultipunto(subtipo);
+      }
+      const vMax = getNum("vMax");
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cValorante = getNum("cValorante");
+      const kaKb = getNum("kaKb");
+      const xs = generarVolumenes(vMax);
+      const ys = [];
+      const ve = (cAnalito * vAnalito) / cValorante;
+      const orientacion = document.getElementById("orientacion").value;
+
+      for (const vb of xs) {
+        const s = sistemaBureta(vb);
+        const nA = s.nAnalitoInicial;
+        const nB = s.nValoranteAgregado;
+        const vL = s.vTotalMl / 1000;
+        let pH;
+
+        if (subtipo === "fuerte_fuerte") {
+          const exceso = nA - nB;
+          if (orientacion === "valorante_bureta") {
+            if (Math.abs(exceso) < 1e-12) pH = 7;
+            else if (exceso > 0) pH = -log10(clamp(exceso / vL, 1e-14));
+            else pH = 14 + log10(clamp((-exceso) / vL, 1e-14));
+          } else {
+            const excesoInv = nB - nA;
+            if (Math.abs(excesoInv) < 1e-12) pH = 7;
+            else if (excesoInv > 0) pH = -log10(clamp(excesoInv / vL, 1e-14));
+            else pH = 14 + log10(clamp((-excesoInv) / vL, 1e-14));
+          }
+        }
+
+        if (subtipo === "acido_debil_base_fuerte") {
+          if (orientacion === "valorante_bureta") {
+            if (nB < 1e-15) {
+              const C = nA / vL;
+              const h = Math.sqrt(kaKb * C);
+              pH = -log10(clamp(h, 1e-14));
+            } else if (nB < nA) {
+              pH = -log10(kaKb) + log10(clamp(nB / (nA - nB), 1e-14));
+            } else if (Math.abs(nB - nA) < 1e-12) {
+              const Csal = nA / vL;
+              const kb = 1e-14 / kaKb;
+              const oh = Math.sqrt(kb * Csal);
+              pH = 14 + log10(clamp(oh, 1e-14));
+            } else {
+              const oh = (nB - nA) / vL;
+              pH = 14 + log10(clamp(oh, 1e-14));
+            }
+          } else {
+            // Inversión: ácido débil agregado sobre base fuerte inicial. Se aproxima por exceso fuerte y zona tampón invertida.
+            if (nB < nA) {
+              const oh = (nA - nB) / vL;
+              pH = 14 + log10(clamp(oh, 1e-14));
+            } else if (Math.abs(nB - nA) < 1e-12) {
+              const Csal = nA / vL;
+              const kb = 1e-14 / kaKb;
+              const oh = Math.sqrt(kb * Csal);
+              pH = 14 + log10(clamp(oh, 1e-14));
+            } else {
+              const excesoAcido = nB - nA;
+              const acidoTotal = nB;
+              const baseConj = nA;
+              pH = -log10(kaKb) + log10(clamp(baseConj / excesoAcido, 1e-14));
+            }
+          }
+        }
+
+        if (subtipo === "base_debil_acido_fuerte") {
+          if (orientacion === "valorante_bureta") {
+            if (nB < 1e-15) {
+              const C = nA / vL;
+              const oh = Math.sqrt(kaKb * C);
+              pH = 14 + log10(clamp(oh, 1e-14));
+            } else if (nB < nA) {
+              const pKb = -log10(kaKb);
+              const pOH = pKb + log10(clamp((nA - nB) / nB, 1e-14));
+              pH = 14 - pOH;
+            } else if (Math.abs(nB - nA) < 1e-12) {
+              const Csal = nA / vL;
+              const ka = 1e-14 / kaKb;
+              const h = Math.sqrt(ka * Csal);
+              pH = -log10(clamp(h, 1e-14));
+            } else {
+              const h = (nB - nA) / vL;
+              pH = -log10(clamp(h, 1e-14));
+            }
+          } else {
+            // Inversión: base débil agregada sobre ácido fuerte inicial.
+            if (nB < nA) {
+              const h = (nA - nB) / vL;
+              pH = -log10(clamp(h, 1e-14));
+            } else if (Math.abs(nB - nA) < 1e-12) {
+              const Csal = nA / vL;
+              const ka = 1e-14 / kaKb;
+              const h = Math.sqrt(ka * Csal);
+              pH = -log10(clamp(h, 1e-14));
+            } else {
+              const pKb = -log10(kaKb);
+              const pOH = pKb + log10(clamp(nA / (nB - nA), 1e-14));
+              pH = 14 - pOH;
+            }
+          }
+        }
+
+        ys.push(Math.max(0, Math.min(14, pH)));
+      }
+
+      return {
+        x: xs,
+        y: ys,
+        ve,
+        yLabel: "pH",
+        titulo: "Curva de valoración ácido–base",
+        interpretacion: interpretarAcidoBase(subtipo, orientacion),
+        puntosClave: puntosClave(xs, ys, ve, "pH")
+      };
+    }
+
+    function interpretarAcidoBase(subtipo, orientacion) {
+      const inv = orientacion === "valorado_bureta";
+      let t = "La curva se grafica contra el volumen agregado desde la bureta. ";
+      if (inv) t += "Como la solución valorada está en la bureta, la orientación se invierte respecto de la valoración convencional. ";
+      if (subtipo === "fuerte_fuerte") t += "En un sistema fuerte/fuerte, el pH queda determinado por el exceso estequiométrico de H⁺ u OH⁻ y el salto se concentra alrededor del punto equivalente.";
+      if (subtipo === "acido_debil_base_fuerte") t += "En ácido débil/base fuerte aparece una región tampón antes del equivalente, y en la semiequivalencia pH ≈ pKa.";
+      if (subtipo === "base_debil_acido_fuerte") t += "En base débil/ácido fuerte aparece una región tampón antes del equivalente, y en la semiequivalencia pOH ≈ pKb.";
+      return t;
+    }
+
+    function calcularAcidoBaseMultipunto(subtipo) {
+      const vMax = getNum("vMax");
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cValorante = getNum("cValorante");
+      const ka1 = getNum("kaKb");
+      const ka2 = getNum("ka2");
+      const ka3 = getNum("ka3");
+      const xs = generarVolumenes(vMax);
+      const ys = [];
+      const orientacion = document.getElementById("orientacion").value;
+      let veList = [];
+      let nEq = subtipo === "acido_triprotico_base_fuerte" ? 3 : 2;
+      const veBase = (cAnalito * vAnalito) / cValorante;
+      veList = Array.from({ length: nEq }, (_, i) => veBase * (i + 1));
+
+      for (const vb of xs) {
+        const vL = (vAnalito + vb) / 1000;
+        let Ct = 0, CNa = 0, CCl = 0;
+
+        if (subtipo === "carbonato_acido_fuerte") {
+          if (orientacion === "valorante_bureta") {
+            const nCarbonato = mol(cAnalito, vAnalito);
+            const nH = mol(cValorante, vb);
+            Ct = nCarbonato / vL;
+            CNa = 2 * nCarbonato / vL;
+            CCl = nH / vL;
+          } else {
+            const nHInicial = mol(cValorante, vAnalito);
+            const nCarbonatoAgregado = mol(cAnalito, vb);
+            Ct = nCarbonatoAgregado / vL;
+            CNa = 2 * nCarbonatoAgregado / vL;
+            CCl = nHInicial / vL;
+          }
+          ys.push(resolverPHCarbonato(Ct, CNa, CCl, ka1, ka2));
+        } else {
+          if (orientacion === "valorante_bureta") {
+            const nAcido = mol(cAnalito, vAnalito);
+            const nBase = mol(cValorante, vb);
+            Ct = nAcido / vL;
+            CNa = nBase / vL;
+          } else {
+            const nBaseInicial = mol(cValorante, vAnalito);
+            const nAcidoAgregado = mol(cAnalito, vb);
+            Ct = nAcidoAgregado / vL;
+            CNa = nBaseInicial / vL;
+          }
+          const kas = subtipo === "acido_triprotico_base_fuerte" ? [ka1, ka2, ka3] : [ka1, ka2];
+          ys.push(resolverPHAcidoPoliprotico(Ct, CNa, kas));
+        }
+      }
+
+      const nombre = subtipo === "carbonato_acido_fuerte" ? "Carbonato / Ácido fuerte" : (subtipo === "acido_triprotico_base_fuerte" ? "Ácido triprótico / Base fuerte" : "Ácido diprótico / Base fuerte");
+      return {
+        x: xs,
+        y: ys,
+        ve: veList[0],
+        veList,
+        yLabel: "pH",
+        titulo: "Curva ácido–base multipunto: " + nombre,
+        interpretacion: interpretarMultipunto(subtipo, orientacion, veList),
+        puntosClave: puntosClave(xs, ys, veList[veList.length - 1], "pH")
+      };
+    }
+
+    function resolverPHAcidoPoliprotico(Ct, CNa, kas) {
+      function cargaNegativa(h) {
+        const oh = 1e-14 / h;
+        if (kas.length === 2) {
+          const [k1, k2] = kas;
+          const den = h*h + k1*h + k1*k2;
+          const a1 = k1*h / den;
+          const a2 = k1*k2 / den;
+          return Ct * (a1 + 2*a2);
+        }
+        const [k1, k2, k3] = kas;
+        const den = h*h*h + k1*h*h + k1*k2*h + k1*k2*k3;
+        const a1 = k1*h*h / den;
+        const a2 = k1*k2*h / den;
+        const a3 = k1*k2*k3 / den;
+        return Ct * (a1 + 2*a2 + 3*a3);
+      }
+      function f(logH) {
+        const h = Math.pow(10, logH);
+        const oh = 1e-14 / h;
+        return h + CNa - oh - cargaNegativa(h);
+      }
+      return resolverPorBiseccionPH(f);
+    }
+
+    function resolverPHCarbonato(Ct, CNa, CCl, k1, k2) {
+      function especies(h) {
+        const den = h*h + k1*h + k1*k2;
+        const a1 = k1*h / den;
+        const a2 = k1*k2 / den;
+        return { hco3: Ct*a1, co3: Ct*a2 };
+      }
+      function f(logH) {
+        const h = Math.pow(10, logH);
+        const oh = 1e-14 / h;
+        const e = especies(h);
+        return h + CNa - oh - CCl - e.hco3 - 2*e.co3;
+      }
+      return resolverPorBiseccionPH(f);
+    }
+
+    function resolverPorBiseccionPH(f) {
+      let a = -14, b = 0;
+      let fa = f(a), fb = f(b);
+      if (fa * fb > 0) {
+        let mejor = a, minAbs = Math.abs(fa);
+        for (let i = 0; i <= 280; i++) {
+          const x = -14 + i * 14 / 280;
+          const fx = f(x);
+          if (Math.abs(fx) < minAbs) { minAbs = Math.abs(fx); mejor = x; }
+        }
+        return -mejor;
+      }
+      for (let i = 0; i < 90; i++) {
+        const m = (a + b) / 2;
+        const fm = f(m);
+        if (fa * fm <= 0) { b = m; fb = fm; } else { a = m; fa = fm; }
+      }
+      return -(a + b) / 2;
+    }
+
+    function interpretarMultipunto(subtipo, orientacion, veList) {
+      let t = "La curva se calcula resolviendo balance de masa, balance de carga y constantes de equilibrio. ";
+      if (orientacion === "valorado_bureta") t += "La solución valorada está en la bureta, por lo que la lectura de la curva debe interpretarse como sistema invertido. ";
+      if (subtipo === "acido_diprotico_base_fuerte") t += "Un ácido diprótico presenta dos neutralizaciones sucesivas y, si las Ka están suficientemente separadas, pueden observarse dos saltos o inflexiones. ";
+      if (subtipo === "acido_triprotico_base_fuerte") t += "Un ácido triprótico puede presentar hasta tres puntos de equivalencia, dependiendo de la separación entre Ka₁, Ka₂ y Ka₃. ";
+      if (subtipo === "carbonato_acido_fuerte") t += "En carbonatos, la valoración con ácido fuerte muestra las etapas CO₃²⁻/HCO₃⁻ y HCO₃⁻/H₂CO₃, por eso se esperan dos puntos de equivalencia. ";
+      t += "Puntos equivalentes calculados: " + veList.map(v => fmt(v, 2) + " mL").join("; ") + ".";
+      return t;
+    }
+
+    function getKpsSeleccionado() {
+      const sel = document.getElementById("salPrecipitacion");
+      return parseFloat(sel.options[sel.selectedIndex].dataset.kps);
+    }
+
+    function calcularPrecipitacion() {
+      const subtipo = document.getElementById("subtipoPrecipitacion").value;
+      if (subtipo === "volhard") return calcularVolhard();
+
+      const vMax = getNum("vMax");
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cValorante = getNum("cValorante");
+      const kps = getKpsSeleccionado();
+      const xs = generarVolumenes(vMax);
+      const ys = [];
+      const ve = (cAnalito * vAnalito) / cValorante;
+      const orientacion = document.getElementById("orientacion").value;
+
+      for (const vb of xs) {
+        const s = sistemaBureta(vb);
+        const nX = s.nAnalitoInicial;
+        const nAg = s.nValoranteAgregado;
+        const vL = s.vTotalMl / 1000;
+        let ag;
+
+        if (orientacion === "valorante_bureta") {
+          // Haluro en erlenmeyer, Ag+ desde bureta.
+          if (nAg < nX) {
+            const xFree = (nX - nAg) / vL;
+            ag = kps / clamp(xFree, 1e-30);
+          } else if (Math.abs(nAg - nX) < 1e-12) {
+            ag = Math.sqrt(kps);
+          } else {
+            ag = (nAg - nX) / vL;
+          }
+        } else {
+          // Ag+ inicial en erlenmeyer, haluro desde bureta.
+          if (nX > nAg) {
+            ag = (nX - nAg) / vL;
+          } else if (Math.abs(nX - nAg) < 1e-12) {
+            ag = Math.sqrt(kps);
+          } else {
+            const xFree = (nAg - nX) / vL;
+            ag = kps / clamp(xFree, 1e-30);
+          }
+        }
+        ys.push(-log10(clamp(ag, 1e-30)));
+      }
+
+      const metodo = subtipo === "mohr" ? "Método de Mohr" : "Precipitación directa 1:1";
+      return {
+        x: xs,
+        y: ys,
+        ve,
+        yLabel: "pAg",
+        titulo: metodo,
+        interpretacion: interpretarPrecipitacion(subtipo, orientacion),
+        puntosClave: puntosClave(xs, ys, ve, "pAg")
+      };
+    }
+
+    function interpretarPrecipitacion(subtipo, orientacion) {
+      let t = "La curva muestra pAg en función del volumen agregado desde la bureta. ";
+      if (orientacion === "valorante_bureta") {
+        t += "Con Ag⁺ en la bureta y haluro en el erlenmeyer, pAg suele ser alto antes del equivalente y disminuye después, porque aumenta [Ag⁺] libre. ";
+      } else {
+        t += "Con haluro en la bureta y Ag⁺ en el erlenmeyer, pAg tiende a aumentar al consumirse Ag⁺ libre. ";
+      }
+      if (subtipo === "mohr") {
+        t += "En Mohr, la curva principal corresponde a Ag⁺/haluro; el indicador cromato detecta el ligero exceso de Ag⁺ posterior al equivalente mediante Ag₂CrO₄.";
+      } else {
+        t += "El salto está gobernado por el Kps del precipitado: cuanto menor es Kps, más acusado resulta el cambio de pAg alrededor del equivalente.";
+      }
+      return t;
+    }
+
+    function calcularVolhard() {
+      const vMax = getNum("vMax");
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cSCN = getNum("cValorante");
+      const vAg = getNum("vAgExceso");
+      const cAg = getNum("cAgExceso");
+      const kpsSCN = getNum("kpsAgSCN");
+      const xs = generarVolumenes(vMax);
+      const ys = [];
+
+      const nHaluro = mol(cAnalito, vAnalito);
+      const nAgInicial = mol(cAg, vAg);
+      const nAgRemanente = Math.max(nAgInicial - nHaluro, 0);
+      const ve = nAgRemanente / cSCN * 1000;
+
+      for (const vb of xs) {
+        const nSCN = mol(cSCN, vb);
+        const vL = (vAnalito + vAg + vb) / 1000;
+        let ag;
+        if (nSCN < nAgRemanente) {
+          ag = (nAgRemanente - nSCN) / vL;
+        } else if (Math.abs(nSCN - nAgRemanente) < 1e-12) {
+          ag = Math.sqrt(kpsSCN);
+        } else {
+          const scnFree = (nSCN - nAgRemanente) / vL;
+          ag = kpsSCN / clamp(scnFree, 1e-30);
+        }
+        ys.push(-log10(clamp(ag, 1e-30)));
+      }
+
+      return {
+        x: xs,
+        y: ys,
+        ve,
+        yLabel: "pAg",
+        titulo: "Método de Volhard, valoración por retroceso",
+        interpretacion: "En Volhard se agrega Ag⁺ en exceso a la muestra con haluro y luego se valora el Ag⁺ remanente con SCN⁻. La curva representa pAg durante la valoración del exceso de plata. El punto equivalente corresponde al consumo del Ag⁺ que no reaccionó con el haluro de la muestra.",
+        puntosClave: puntosClave(xs, ys, ve, "pAg"),
+        extra: {
+          nAgInicial,
+          nHaluro,
+          nAgRemanente
+        }
+      };
+    }
+
+    function calcularEdta() {
+      const vMax = getNum("vMax");
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cEdta = getNum("cValorante");
+      const kf = getNum("kfCondicional");
+      const xs = generarVolumenes(vMax);
+      const ys = [];
+      const ve = (cAnalito * vAnalito) / cEdta;
+      const orientacion = document.getElementById("orientacion").value;
+
+      for (const vb of xs) {
+        const s = sistemaBureta(vb);
+        const nM = s.nAnalitoInicial;
+        const nY = s.nValoranteAgregado;
+        const vL = s.vTotalMl / 1000;
+        let mFree;
+
+        if (orientacion === "valorante_bureta") {
+          if (nY < nM) {
+            mFree = (nM - nY) / vL;
+          } else if (Math.abs(nY - nM) < 1e-12) {
+            const C = nM / vL;
+            mFree = Math.sqrt(clamp(C / kf, 1e-30));
+          } else {
+            const yFree = (nY - nM) / vL;
+            const Ccomplex = nM / vL;
+            mFree = Ccomplex / (kf * clamp(yFree, 1e-30));
+          }
+        } else {
+          // Metal agregado sobre EDTA inicial.
+          if (nM > nY) {
+            const yFree = (nM - nY) / vL;
+            const Ccomplex = nY / vL;
+            mFree = Ccomplex / (kf * clamp(yFree, 1e-30));
+          } else if (Math.abs(nM - nY) < 1e-12) {
+            const C = nM / vL;
+            mFree = Math.sqrt(clamp(C / kf, 1e-30));
+          } else {
+            mFree = (nY - nM) / vL;
+          }
+        }
+
+        ys.push(-log10(clamp(mFree, 1e-30)));
+      }
+
+      return {
+        x: xs,
+        y: ys,
+        ve,
+        yLabel: "pM",
+        titulo: "Curva complejométrica con EDTA",
+        interpretacion: interpretarEdta(orientacion),
+        puntosClave: puntosClave(xs, ys, ve, "pM")
+      };
+    }
+
+    function interpretarEdta(orientacion) {
+      let t = "La curva muestra pM = −log[M libre] durante la complejación 1:1 con EDTA. ";
+      if (orientacion === "valorante_bureta") {
+        t += "Con EDTA en bureta, el metal libre disminuye a medida que se forma el complejo, por lo que pM aumenta. ";
+      } else {
+        t += "Con metal en bureta y EDTA en el erlenmeyer, la orientación se invierte respecto de la valoración complejométrica convencional. ";
+      }
+      t += "Esta versión usa Kf' condicional, por lo que el efecto del pH ya debe estar incorporado en la constante ingresada.";
+      return t;
+    }
+
+    function cargarParametrosRedox() {
+      const par = document.getElementById("subtipoRedox")?.value;
+      if (!par) return;
+      const presets = {
+        fe_ce: { ea: 0.771, ev: 1.610, na: 1, nv: 1, r: 1 },
+        fe_mno4: { ea: 0.771, ev: 1.510, na: 1, nv: 5, r: 0.2 },
+        i2_tiosulfato: { ea: 0.535, ev: 0.080, na: 2, nv: 1, r: 2 },
+        generico_redox: { ea: 0.500, ev: 1.000, na: 1, nv: 1, r: 1 }
+      };
+      const p = presets[par];
+      document.getElementById("eAnalito").value = p.ea;
+      document.getElementById("eValorante").value = p.ev;
+      document.getElementById("nAnalitoRedox").value = p.na;
+      document.getElementById("nValoranteRedox").value = p.nv;
+      document.getElementById("esteqRedox").value = p.r;
+    }
+
+    function calcularRedox() {
+      const vMax = getNum("vMax");
+      const cAnalito = getNum("cAnalito");
+      const vAnalito = getNum("vAnalito");
+      const cValorante = getNum("cValorante");
+      const ea = getNum("eAnalito");
+      const ev = getNum("eValorante");
+      const na = getNum("nAnalitoRedox");
+      const nv = getNum("nValoranteRedox");
+      const r = getNum("esteqRedox");
+      const orientacion = document.getElementById("orientacion").value;
+      const xs = generarVolumenes(vMax);
+      const ys = [];
+      const ve = (cAnalito * vAnalito * r) / cValorante;
+
+      for (const vb of xs) {
+        let nRedInicial, nOxTitulante;
+        if (orientacion === "valorante_bureta") {
+          nRedInicial = mol(cAnalito, vAnalito);
+          nOxTitulante = mol(cValorante, vb);
+        } else {
+          nRedInicial = mol(cValorante, vAnalito);
+          nOxTitulante = mol(cAnalito, vb);
+        }
+        const nValoranteEq = nRedInicial * r;
+        let E;
+        if (nOxTitulante <= 1e-15) {
+          E = ea - 0.120;
+        } else if (nOxTitulante < nValoranteEq) {
+          const fraccion = nOxTitulante / nValoranteEq;
+          const nOxAnalito = nRedInicial * fraccion;
+          const nRedAnalito = nRedInicial - nOxAnalito;
+          E = ea + (0.05916 / na) * log10(clamp(nOxAnalito / nRedAnalito, 1e-12));
+        } else if (Math.abs(nOxTitulante - nValoranteEq) < 1e-12) {
+          E = (na * ea + nv * ev) / (na + nv);
+        } else {
+          const nExcesoValorante = nOxTitulante - nValoranteEq;
+          const nFormaReducidaValorante = nValoranteEq;
+          E = ev + (0.05916 / nv) * log10(clamp(nExcesoValorante / nFormaReducidaValorante, 1e-12));
+        }
+        ys.push(E);
+      }
+
+      return {
+        x: xs,
+        y: ys,
+        ve,
+        yLabel: "E (V)",
+        titulo: "Curva de valoración redox",
+        interpretacion: interpretarRedox(orientacion),
+        puntosClave: puntosClave(xs, ys, ve, "E (V)")
+      };
+    }
+
+    function interpretarRedox(orientacion) {
+      let t = "La curva redox se calcula con una forma simplificada de la ecuación de Nernst antes y después del punto equivalente. ";
+      if (orientacion === "valorado_bureta") t += "Al invertir bureta y erlenmeyer, también se invierte el sentido operativo de la curva porque cambia qué especie se agrega. ";
+      t += "El potencial antes del equivalente está dominado por el par redox del analito; después del equivalente, por el par redox del valorante en exceso. En el equivalente se usa una aproximación ponderada por el número de electrones.";
+      return t;
+    }
+
+    function puntosClave(xs, ys, ve, etiqueta) {
+      const targets = [0, ve / 2, ve, ve * 1.5].filter(v => v >= 0 && v <= Math.max(...xs));
+      return targets.map(v => ({ volumen: v, valor: interp(xs, ys, v), etiqueta }));
+    }
+
+    function interp(xs, ys, xq) {
+      if (!xs || xs.length === 0) return NaN;
+      if (xq <= xs[0]) return ys[0];
+      if (xq >= xs[xs.length - 1]) return ys[ys.length - 1];
+      for (let i = 1; i < xs.length; i++) {
+        if (xs[i] >= xq) {
+          const t = (xq - xs[i - 1]) / (xs[i] - xs[i - 1]);
+          return ys[i - 1] + t * (ys[i] - ys[i - 1]);
+        }
+      }
+      return NaN;
+    }
+
+    function generar() {
+      const tipo = document.getElementById("tipoValoracion").value;
+      let res;
+      if (!validarEntradas()) return;
+      if (tipo === "acidobase") res = calcularAcidoBase();
+      if (tipo === "precipitacion") res = calcularPrecipitacion();
+      if (tipo === "edta") res = calcularEdta();
+      if (tipo === "redox") res = calcularRedox();
+      datosActuales = res;
+      puntoInterpolado = null;
+      renderizar(res);
+      interpolarManual(false);
+    }
+
+    function validarEntradas() {
+      const ids = ["cAnalito", "vAnalito", "cValorante", "vMax"];
+      for (const id of ids) {
+        const v = getNum(id);
+        if (!isFinite(v) || v <= 0) {
+          alert("Revise el dato: " + id + ". Debe ser un número positivo.");
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function renderizar(res) {
+      const traces = [{
+        x: res.x,
+        y: res.y,
+        mode: "lines",
+        name: res.yLabel,
+        line: { width: 3 },
+        hovertemplate: "V = %{x:.3f} mL<br>" + res.yLabel + " = %{y:.3f}<extra></extra>"
+      }];
+
+      const shapes = [];
+      const veArray = res.veList || [res.ve];
+      for (const veq of veArray) {
+        if (isFinite(veq) && veq >= 0 && veq <= Math.max(...res.x)) {
+          shapes.push({
+            type: "line",
+            x0: veq,
+            x1: veq,
+            y0: Math.min(...res.y),
+            y1: Math.max(...res.y),
+            line: { dash: "dash", width: 2 }
+          });
+        }
+      }
+
+      if (puntoInterpolado) {
+        traces.push({
+          x: [puntoInterpolado.x],
+          y: [puntoInterpolado.y],
+          mode: "markers+text",
+          name: "Interpolado",
+          marker: { size: 11 },
+          text: ["Interpolado"],
+          textposition: "top center",
+          hovertemplate: "V = %{x:.3f} mL<br>Valor = %{y:.3f}<extra></extra>"
+        });
+      }
+
+      const layout = {
+        title: {
+          text: res.titulo,
+          font: { size: 20 }
+        },
+        xaxis: {
+          title: "Volumen agregado desde la bureta (mL)",
+          zeroline: false,
+          gridcolor: "#e5edf0"
+        },
+        yaxis: {
+          title: res.yLabel,
+          zeroline: false,
+          gridcolor: "#e5edf0"
+        },
+        margin: { l: 70, r: 30, t: 60, b: 70 },
+        paper_bgcolor: "#ffffff",
+        plot_bgcolor: "#fbfdfe",
+        shapes,
+        showlegend: true,
+        annotations: veArray.filter(v => isFinite(v) && v >= 0 && v <= Math.max(...res.x)).map((v, i) => ({
+          x: v,
+          y: Math.max(...res.y),
+          text: "Veq" + (veArray.length > 1 ? (i + 1) : "") + " = " + fmt(v, 2) + " mL",
+          showarrow: true,
+          arrowhead: 2,
+          ax: 45,
+          ay: -35 - 15*i
+        }))
+      };
+
+      Plotly.newPlot("chart", traces, layout, { responsive: true, displaylogo: false });
+
+      document.getElementById("metricVariable").textContent = res.yLabel;
+      document.getElementById("metricVe").textContent = (res.veList || [res.ve]).map(v => fmt(v, 2)).join(" / ") + " mL";
+      document.getElementById("metricOrientacion").textContent = document.getElementById("orientacion").value === "valorante_bureta" ? "Normal" : "Invertida";
+      document.getElementById("interpretacion").textContent = res.interpretacion;
+      document.getElementById("interpretacion").className = "note";
+      renderTabla(res);
+    }
+
+    function renderTabla(res) {
+      let html = "<table><thead><tr><th>Punto</th><th>Volumen agregado (mL)</th><th>" + res.yLabel + "</th></tr></thead><tbody>";
+      const nombres = ["Inicial", "Semiequivalencia", "Equivalencia", "Post-equivalencia"];
+      res.puntosClave.forEach((p, i) => {
+        html += `<tr><td>${nombres[i] || "Punto"}</td><td>${fmt(p.volumen, 3)}</td><td>${fmt(p.valor, 4)}</td></tr>`;
+      });
+      if (res.extra) {
+        html += `<tr><td>Volhard: Ag⁺ inicial</td><td colspan="2">${fmt(res.extra.nAgInicial, 6)} mol</td></tr>`;
+        html += `<tr><td>Volhard: haluro en muestra</td><td colspan="2">${fmt(res.extra.nHaluro, 6)} mol</td></tr>`;
+        html += `<tr><td>Volhard: Ag⁺ remanente</td><td colspan="2">${fmt(res.extra.nAgRemanente, 6)} mol</td></tr>`;
+      }
+      html += "</tbody></table>";
+      document.getElementById("tablaPuntos").innerHTML = html;
+    }
+
+    function interpolarManual(redibujar = true) {
+      if (!datosActuales) return;
+      const v = getNum("vInterpolar");
+      if (!isFinite(v)) return;
+      const vmax = Math.max(...datosActuales.x);
+      if (v < 0 || v > vmax) {
+        document.getElementById("metricInterp").textContent = "fuera de rango";
+        return;
+      }
+      const y = interp(datosActuales.x, datosActuales.y, v);
+      puntoInterpolado = { x: v, y };
+      document.getElementById("metricInterp").textContent = fmt(y, 4);
+      if (redibujar) renderizar(datosActuales);
+    }
+
+    actualizarInterfaz();
+    cargarEjemplo();
+  </script>
+</body>
+</html>
