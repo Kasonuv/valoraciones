@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Química Analítica · Bienvenida y autoevaluación</title>
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --card: #ffffff;
+      --ink: #27313f;
+      --muted: #64748b;
+      --line: #dde5ec;
+      --blue: #b9d7ea;
+      --blue-strong: #6d9fbd;
+      --mint: #cde8d5;
+      --lavender: #d9d2f3;
+      --peach: #f3d2bf;
+      --yellow: #f6e8b1;
+      --rose: #efd2d2;
+      --green: #3d7b5f;
+      --red: #a94442;
+      --orange: #9a6a00;
+      --shadow: 0 14px 35px rgba(39, 49, 63, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(185,215,234,0.55), transparent 30%),
+        radial-gradient(circle at top right, rgba(217,210,243,0.50), transparent 28%),
+        linear-gradient(180deg, var(--bg), #eef5f3);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    header {
+      padding: 34px 20px 22px;
+      text-align: center;
+    }
+
+    .institution {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.75);
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(39,49,63,0.06);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      max-width: 920px;
+      margin: 18px auto 0;
+      font-size: 1.08rem;
+      color: #475569;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto 60px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(221,229,236,0.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 3vw, 34px);
+      margin: 18px 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .topic-card {
+      padding: 18px;
+      border-radius: 18px;
+      min-height: 150px;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .topic-card h3 { margin: 0 0 8px; font-size: 1.02rem; }
+    .topic-card p { margin: 0; font-size: 0.94rem; color: #334155; }
+    .t1 { background: var(--blue); }
+    .t2 { background: var(--mint); }
+    .t3 { background: var(--lavender); }
+    .t4 { background: var(--peach); }
+
+    .notice {
+      background: #fff9df;
+      border: 1px solid #f0df9a;
+      border-radius: 16px;
+      padding: 15px 18px;
+      color: #51451c;
+      margin-top: 18px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    label.small-label {
+      display: block;
+      font-size: 0.86rem;
+      color: #475569;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 13px;
+      background: white;
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(247,244,238,0.88);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(221,229,236,0.8);
+      padding: 10px 0;
+      margin: 0 -14px 16px;
+    }
+
+    .progress-inner {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 11px;
+      background: #e6eef3;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #d5e2eb;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--blue-strong), #9c8bd3, #7bbd9d);
+      transition: width 250ms ease;
+    }
+
+    .progress-label {
+      font-size: 0.9rem;
+      color: #475569;
+      min-width: 100px;
+      text-align: right;
+    }
+
+    .step { display: none; }
+    .step.active { display: block; animation: fade .25s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .section-dot {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: bold;
+      color: #243142;
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .question {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 16px 0;
+      background: rgba(255,255,255,0.72);
+    }
+
+    .question h4 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+
+    .qmeta {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: #64748b;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-bottom: 7px;
+    }
+
+    .option {
+      display: block;
+      padding: 9px 10px;
+      margin: 5px 0;
+      border-radius: 11px;
+      cursor: pointer;
+    }
+
+    .option:hover { background: #f8fafc; }
+    .option input { margin-right: 8px; }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.98rem;
+      color: #263241;
+      background: var(--blue);
+      box-shadow: 0 8px 18px rgba(39,49,63,0.10);
+    }
+
+    button.secondary { background: #e7edf2; }
+    button.success { background: var(--mint); }
+    button.warning { background: var(--yellow); }
+    button:hover { filter: brightness(0.98); transform: translateY(-1px); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .score-card {
+      border-radius: 18px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .score-card strong { display: block; font-size: 1.7rem; margin-top: 8px; }
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .tag.ok { background: #dff2e6; color: var(--green); }
+    .tag.mid { background: #fff1c9; color: var(--orange); }
+    .tag.low { background: #f7dddd; color: var(--red); }
+
+    .feedback-block {
+      border-left: 5px solid var(--blue-strong);
+      padding: 12px 15px;
+      background: #f8fbfd;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .hidden { display: none !important; }
+
+    footer {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9rem;
+      padding: 20px;
+    }
+
+    @media (max-width: 850px) {
+      .intro-grid, .results-grid, .form-row { grid-template-columns: 1fr; }
+      .progress-inner { flex-direction: column; align-items: stretch; }
+      .progress-label { text-align: left; min-width: auto; }
+      .nav { flex-direction: column; }
+      button { width: 100%; }
+    }
+
+    @media print {
+      body { background: white; color: #111; }
+      header, .progress-wrap, .step:not(#resultsStep), .nav, #downloadPdfBtn, #restartBtn, footer { display: none !important; }
+      main { width: 100%; margin: 0; }
+      .card { box-shadow: none; border: none; padding: 0; }
+      #resultsStep { display: block !important; }
+      .results-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="institution">
+      <span class="pill">UADE</span>
+      <span class="pill">Departamento de Biotecnología y Alimentos</span>
+      <span class="pill">Equipo de Seguimiento de Química Analítica</span>
+    </div>
+    <h1>Química Analítica</h1>
+    <p class="subtitle">Bienvenida y autoevaluación de bases indispensables para iniciar la cursada</p>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-inner">
+      <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+      <div id="progressLabel" class="progress-label">Inicio</div>
+    </div>
+  </div>
+
+  <main>
+    <section id="step0" class="step active">
+      <div class="card">
+        <h2>Antes de empezar</h2>
+        <p>Química Analítica trabaja con muestras reales, reacciones químicas, identificación de especies, selección de técnicas, interpretación de resultados y control de calidad de la información experimental. Para poder avanzar con esos temas, hay algunos saberes previos que deben estar disponibles desde el inicio.</p>
+        <p>Esta actividad no busca funcionar como una barrera ni como un parcial tradicional. La intención es que cada estudiante pueda revisar su punto de partida y reconocer qué temas necesita reforzar con mayor cuidado antes de entrar de lleno en volumetrías, gravimetría, sensibilidad, especificidad, precipitación, complejos, ácido-base y redox.</p>
+        <div class="intro-grid">
+          <div class="topic-card t1"><h3>Soluciones</h3><p>Formas de expresar concentración, diluciones, preparación de soluciones y conversiones.</p></div>
+          <div class="topic-card t2"><h3>Estequiometría</h3><p>Balanceo, relaciones molares, pureza, rendimiento, limitante y cálculos con soluciones.</p></div>
+          <div class="topic-card t3"><h3>Nomenclatura</h3><p>Fórmulas, nombres, oxoácidos, sales ácidas, ortoácidos, piroácidos y sales derivadas.</p></div>
+          <div class="topic-card t4"><h3>Equilibrio</h3><p>Constantes, cociente de reacción, Le Châtelier, pH, Kps, ion común y complejos.</p></div>
+        </div>
+        <div class="notice"><strong>Importante:</strong> al finalizar vas a obtener una devolución por bloque. Esa devolución podrá descargarse o guardarse como PDF y servirá como guía personal de repaso.</div>
+        <h3>Datos para la devolución</h3>
+        <div class="form-row">
+          <div><label class="small-label" for="studentName">Apellido y nombre</label><input id="studentName" type="text" placeholder="Ej. Pérez, Ana" /></div>
+          <div><label class="small-label" for="studentCourse">Comisión</label><input id="studentCourse" type="text" placeholder="Ej. Turno mañana" /></div>
+          <div><label class="small-label" for="studentId">Legajo o DNI</label><input id="studentId" type="text" placeholder="Opcional" /></div>
+        </div>
+        <div class="nav"><span></span><button onclick="nextStep()">Comenzar autoevaluación</button></div>
+      </div>
+    </section>
+
+    <section id="step1" class="step">
+      <div class="card">
+        <div class="section-title"><div class="section-dot t1">1</div><div><h2>Soluciones y concentraciones</h2><p>Repaso de unidades, preparación, diluciones y conversiones. Recordá usar coma o punto decimal indistintamente.</p></div></div>
+        <div id="questions-soluciones"></div>
+        <div class="nav"><button class="secondary" onclick="prevStep()">Volver</button><button onclick="nextStep()">Siguiente bloque</button></div>
+      </div>
+    </section>
+
+    <section id="step2" class="step">
+      <div class="card">
+        <div class="section-title"><div class="section-dot t2">2</div><div><h2>Estequiometría</h2><p>Relaciones molares, ecuaciones, reactivo limitante, pureza, rendimiento y cálculos analíticos básicos.</p></div></div>
+        <div id="questions-estequiometria"></div>
+        <div class="nav"><button class="secondary" onclick="prevStep()">Volver</button><button onclick="nextStep()">Siguiente bloque</button></div>
+      </div>
+    </section>
+
+    <section id="step3" class="step">
+      <div class="card">
+        <div class="section-title"><div class="section-dot t3">3</div><div><h2>Nomenclatura inorgánica</h2><p>Incluye sales ácidas, ortoácidos, piroácidos y sales derivadas, además de nomenclatura tradicional, Stock e IUPAC.</p></div></div>
+        <div id="questions-nomenclatura"></div>
+        <div class="nav"><button class="secondary" onclick="prevStep()">Volver</button><button onclick="nextStep()">Siguiente bloque</button></div>
+      </div>
+    </section>
+
+    <section id="step4" class="step">
+      <div class="card">
+        <div class="section-title"><div class="section-dot t4">4</div><div><h2>Equilibrio químico</h2><p>Conceptos básicos que después se usan en ácido-base, precipitación, complejos, redox y selección de condiciones analíticas.</p></div></div>
+        <div id="questions-equilibrio"></div>
+        <div class="nav"><button class="secondary" onclick="prevStep()">Volver</button><button class="success" onclick="finishQuiz()">Ver devolución</button></div>
+      </div>
+    </section>
+
+    <section id="resultsStep" class="step">
+      <div class="card" id="pdfArea">
+        <h2>Devolución de autoevaluación</h2>
+        <p id="studentLine"></p>
+        <p>Esta devolución tiene carácter orientativo. Su objetivo es señalar qué bases conviene reforzar para transitar Química Analítica en mejores condiciones.</p>
+        <div id="overallResult" class="notice"></div>
+        <div id="resultsGrid" class="results-grid"></div>
+        <h3>Orientaciones de estudio</h3>
+        <div id="feedbackDetails"></div>
+        <h3>Próximos pasos sugeridos</h3>
+        <div class="feedback-block">
+          <p><strong>Usá esta devolución como hoja de ruta.</strong> Empezá por los bloques marcados como dificultad importante, seguí por los de manejo parcial y dejá para el final los que ya aparecen como suficientes.</p>
+          <p>Si un bloque aparece bajo, no alcanza con volver a leer teoría. Conviene resolver ejercicios, corregirlos y revisar especialmente los errores repetidos.</p>
+        </div>
+        <p style="color:#64748b;font-size:0.92rem;">UADE · Departamento de Biotecnología y Alimentos · Equipo de Seguimiento de Química Analítica</p>
+      </div>
+      <div class="card">
+        <div class="nav">
+          <button id="restartBtn" class="secondary" onclick="restartQuiz()">Reiniciar</button>
+          <button id="downloadPdfBtn" class="warning" onclick="downloadPDF()">Descargar devolución en PDF</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Dispositivo de bienvenida y autoevaluación · Química Analítica</footer>
+
+  <script>
+    const steps = ["step0", "step1", "step2", "step3", "step4", "resultsStep"];
+    let currentStep = 0;
+
+    const quiz = {
+      soluciones: {
+        title: "Soluciones y concentraciones",
+        short: "Soluciones",
+        container: "questions-soluciones",
+        questions: [
+          {type:"num", topic:"Molaridad", q:"Se disuelven 5,85 g de NaCl y se lleva a volumen final de 500,0 mL. ¿Cuál es la molaridad? Masa molar NaCl = 58,5 g/mol.", ans:0.20, tol:0.01, unit:"M", tip:"Revisar cálculo de molaridad: moles de soluto sobre litros de solución."},
+          {type:"num", topic:"Dilución", q:"¿Qué volumen, en mL, de HCl 2,00 M se necesita para preparar 250,0 mL de HCl 0,100 M?", ans:12.5, tol:0.2, unit:"mL", tip:"Revisar C1·V1 = C2·V2 y coherencia de unidades de volumen."},
+          {type:"mc", topic:"% m/v", q:"Una solución 5 % m/v contiene:", options:["5 g de soluto cada 100 mL de solución","5 g de soluto cada 100 g de solución","5 mL de soluto cada 100 mL de solución","5 mol de soluto cada litro"], ans:0, tip:"Revisar diferencias entre porcentaje masa/volumen, masa/masa y volumen/volumen."},
+          {type:"num", topic:"ppm", q:"Una solución contiene 12 mg de analito en 2,0 L de solución acuosa. Suponiendo densidad cercana a 1 g/mL, expresar la concentración en ppm.", ans:6, tol:0.2, unit:"ppm", tip:"Revisar ppm en soluciones acuosas diluidas: mg/L como aproximación frecuente."},
+          {type:"num", topic:"% m/m", q:"Se preparan 200 g de solución con 10 g de soluto. ¿Cuál es el % m/m?", ans:5, tol:0.1, unit:"%", tip:"Revisar porcentaje masa en masa: masa de soluto sobre masa de solución por 100."},
+          {type:"num", topic:"Molalidad", q:"Se disuelven 0,50 mol de glucosa en 2,0 kg de agua. ¿Cuál es la molalidad?", ans:0.25, tol:0.01, unit:"mol/kg", tip:"Revisar molalidad: moles de soluto por kg de solvente, no por litro de solución."},
+          {type:"mc", topic:"Fracción molar", q:"La fracción molar de un componente se define como:", options:["moles del componente / moles totales","masa del componente / masa total","volumen del componente / volumen total","moles del componente / litros de solución"], ans:0, tip:"Revisar fracción molar y su diferencia con molaridad y porcentajes."},
+          {type:"num", topic:"Mezclas", q:"Se mezclan 100 mL de NaCl 0,10 M con 200 mL de agua. Suponiendo volúmenes aditivos, ¿cuál es la concentración final?", ans:0.033, tol:0.003, unit:"M", tip:"Revisar diluciones por agregado de solvente y conservación de moles de soluto."},
+          {type:"num", topic:"Normalidad", q:"Para H2SO4 en neutralización completa, ¿cuál es la normalidad de una solución 0,10 M?", ans:0.20, tol:0.01, unit:"N", tip:"Revisar equivalentes ácido-base y relación entre molaridad y normalidad."},
+          {type:"mc", topic:"% v/v", q:"Una solución hidroalcohólica 30 % v/v se interpreta como:", options:["30 mL de soluto líquido cada 100 mL de solución","30 g de soluto cada 100 mL de solución","30 mol de soluto cada litro","30 g de soluto cada 100 g de solución"], ans:0, tip:"Revisar porcentaje volumen en volumen."},
+          {type:"num", topic:"Preparación desde sólido", q:"¿Qué masa de KNO3 se necesita para preparar 250,0 mL de solución 0,200 M? Masa molar KNO3 = 101,1 g/mol.", ans:5.06, tol:0.08, unit:"g", tip:"Revisar pasaje de molaridad a moles y luego a masa."},
+          {type:"num", topic:"ppb", q:"Una muestra tiene 0,080 mg/L de Pb. Expresar la concentración en ppb, suponiendo solución acuosa diluida.", ans:80, tol:2, unit:"ppb", tip:"Revisar equivalencia aproximada: 1 µg/L ≈ 1 ppb en agua diluida."},
+          {type:"mc", topic:"Unidades", q:"¿Cuál de las siguientes unidades corresponde a molalidad?", options:["mol/L de solución","mol/kg de solvente","g/100 mL de solución","mg/L"], ans:1, tip:"Revisar unidades asociadas a cada forma de concentración."},
+          {type:"num", topic:"Conversión masa-volumen", q:"Una solución de NaOH contiene 4,0 g en 500 mL. Masa molar NaOH = 40,0 g/mol. ¿Cuál es su molaridad?", ans:0.20, tol:0.01, unit:"M", tip:"Revisar conversión masa → moles y volumen en litros."}
+        ]
+      },
+      estequiometria: {
+        title: "Estequiometría",
+        short: "Estequiometría",
+        container: "questions-estequiometria",
+        questions: [
+          {type:"mc", topic:"Balanceo", q:"La ecuación balanceada para HCl + Na2CO3 → NaCl + H2O + CO2 es:", options:["HCl + Na2CO3 → NaCl + H2O + CO2","2 HCl + Na2CO3 → 2 NaCl + H2O + CO2","HCl + 2 Na2CO3 → NaCl + H2O + CO2","2 HCl + 2 Na2CO3 → NaCl + H2O + CO2"], ans:1, tip:"Revisar balanceo de ecuaciones antes de calcular."},
+          {type:"num", topic:"Relación molar", q:"Según la ecuación balanceada anterior, ¿cuántos moles de HCl reaccionan con 1 mol de Na2CO3?", ans:2, tol:0.01, unit:"mol", tip:"Revisar lectura de coeficientes estequiométricos."},
+          {type:"num", topic:"Volumetría", q:"Se titulan 25,00 mL de NaOH con HCl 0,100 M y se consumen 18,40 mL. ¿Cuál es la molaridad del NaOH?", ans:0.0736, tol:0.002, unit:"M", tip:"Revisar relación 1:1 entre HCl y NaOH y uso correcto de volúmenes."},
+          {type:"num", topic:"Pureza", q:"Una muestra impura contiene 0,00400 mol de CaCO3. ¿Qué masa de CaCO3 puro representa? Masa molar CaCO3 = 100,1 g/mol.", ans:0.400, tol:0.01, unit:"g", tip:"Revisar conversión de moles a masa."},
+          {type:"num", topic:"Pureza", q:"Si la muestra anterior pesaba 0,500 g, ¿cuál es el porcentaje de pureza?", ans:80, tol:2, unit:"%", tip:"Revisar pureza: masa de sustancia pura sobre masa de muestra por 100."},
+          {type:"mc", topic:"Reactivo limitante", q:"Para la reacción 2 A + B → C, si se mezclan 0,50 mol de A y 0,40 mol de B, el reactivo limitante es:", options:["A","B","C","No se puede saber"], ans:0, tip:"Revisar comparación entre cantidad disponible y proporción estequiométrica."},
+          {type:"num", topic:"Rendimiento", q:"Se obtienen 0,850 g de producto cuando teóricamente deberían obtenerse 1,000 g. ¿Cuál es el rendimiento porcentual?", ans:85, tol:1, unit:"%", tip:"Revisar rendimiento: obtenido sobre teórico por 100."},
+          {type:"mc", topic:"Precipitación", q:"En la precipitación de AgCl a partir de Ag+ y Cl-, la relación molar Ag+ : Cl- es:", options:["1:1","1:2","2:1","3:1"], ans:0, tip:"Revisar fórmula del precipitado y relación entre iones."},
+          {type:"num", topic:"Gravimetría", q:"¿Cuántos moles de Cl- hay en 0,0100 mol de AgCl precipitado?", ans:0.0100, tol:0.0002, unit:"mol", tip:"Revisar relación molar dentro de la fórmula del precipitado."},
+          {type:"num", topic:"Masa-moles", q:"¿Cuántos moles hay en 9,8 g de H2SO4? Masa molar H2SO4 = 98 g/mol.", ans:0.10, tol:0.005, unit:"mol", tip:"Revisar moles = masa / masa molar."},
+          {type:"mc", topic:"Coeficientes", q:"Los coeficientes estequiométricos de una ecuación balanceada indican principalmente:", options:["Relaciones molares entre especies","Masas atómicas","Densidades de los reactivos","Solubilidades"], ans:0, tip:"Revisar interpretación química de una ecuación balanceada."},
+          {type:"num", topic:"Exceso", q:"Para 2 H2 + O2 → 2 H2O, si reaccionan 4 mol de H2 con suficiente O2, ¿cuántos moles de H2O pueden formarse?", ans:4, tol:0.01, unit:"mol", tip:"Revisar relaciones molares producto-reactivo."},
+          {type:"num", topic:"Volumetría", q:"Una solución de ácido oxálico H2C2O4 se titula con NaOH. Si 1 mol de ácido consume 2 mol de NaOH, ¿cuántos moles de NaOH consumen 0,015 mol de ácido?", ans:0.030, tol:0.001, unit:"mol", tip:"Revisar estequiometría ácido-base en ácidos dipróticos."},
+          {type:"mc", topic:"Gravimetría", q:"En un análisis gravimétrico, conocer la fórmula exacta del precipitado es necesario porque permite:", options:["Relacionar la masa del precipitado con la cantidad de analito","Elegir el color del indicador","Evitar el uso de balanza","Calcular el pH sin datos adicionales"], ans:0, tip:"Revisar factor gravimétrico y relación analito-precipitado."}
+        ]
+      },
+      nomenclatura: {
+        title: "Nomenclatura inorgánica",
+        short: "Nomenclatura",
+        container: "questions-nomenclatura",
+        questions: [
+          {type:"text", topic:"Sales", q:"Escribir la fórmula del sulfato de aluminio.", ans:["Al2(SO4)3","Al₂(SO₄)₃"], tip:"Revisar cargas de Al3+ y SO4 2-."},
+          {type:"mc", topic:"Stock", q:"FeCl3 se nombra correctamente como:", options:["Cloruro de hierro(III)","Cloruro de hierro(I)","Clorato de hierro(III)","Hipoclorito férrico"], ans:0, tip:"Revisar nomenclatura Stock y estados de oxidación."},
+          {type:"num", topic:"Número de oxidación", q:"Indicar el número de oxidación del Mn en KMnO4.", ans:7, tol:0.01, unit:"", tip:"Revisar cálculo de números de oxidación en oxosales."},
+          {type:"mc", topic:"Óxidos", q:"Cu2O corresponde a:", options:["Óxido de cobre(I)","Óxido de cobre(II)","Peróxido de cobre","Hidróxido cuproso"], ans:0, tip:"Revisar óxidos y nomenclatura Stock/tradicional."},
+          {type:"text", topic:"Oxoácidos", q:"Escribir la fórmula del ácido nítrico.", ans:["HNO3","HNO₃"], tip:"Revisar oxoácidos del nitrógeno."},
+          {type:"text", topic:"Oxoácidos", q:"Escribir la fórmula del ácido nitroso.", ans:["HNO2","HNO₂"], tip:"Revisar diferencia entre terminaciones -oso e -ico."},
+          {type:"text", topic:"Sales ácidas", q:"Escribir la fórmula del hidrogenocarbonato de sodio.", ans:["NaHCO3","NaHCO₃"], tip:"Revisar sales ácidas derivadas de ácidos polipróticos."},
+          {type:"text", topic:"Sales ácidas", q:"Escribir la fórmula del hidrogenosulfato de potasio.", ans:["KHSO4","KHSO₄"], tip:"Revisar aniones ácidos como HSO4-."},
+          {type:"text", topic:"Ortoácidos", q:"Escribir la fórmula del ácido ortofosfórico.", ans:["H3PO4","H₃PO₄"], tip:"Revisar ortoácidos, especialmente ácido fosfórico."},
+          {type:"text", topic:"Piroácidos", q:"Escribir la fórmula del ácido pirofosfórico.", ans:["H4P2O7","H₄P₂O₇"], tip:"Revisar piroácidos y su relación con condensación de ortoácidos."},
+          {type:"text", topic:"Sales de ortoácidos", q:"Escribir la fórmula del fosfato de sodio.", ans:["Na3PO4","Na₃PO₄"], tip:"Revisar sales derivadas del ácido ortofosfórico."},
+          {type:"text", topic:"Sales ácidas de ortoácidos", q:"Escribir la fórmula del dihidrogenofosfato de sodio.", ans:["NaH2PO4","NaH₂PO₄"], tip:"Revisar sales ácidas del ácido ortofosfórico."},
+          {type:"text", topic:"Sales ácidas de ortoácidos", q:"Escribir la fórmula del hidrogenofosfato de disodio.", ans:["Na2HPO4","Na₂HPO₄"], tip:"Revisar HPO4 2- y su combinación con Na+."},
+          {type:"text", topic:"Sales de piroácidos", q:"Escribir la fórmula del pirofosfato de sodio.", ans:["Na4P2O7","Na₄P₂O₇"], tip:"Revisar sales derivadas del ácido pirofosfórico."},
+          {type:"mc", topic:"Aniones", q:"El ion H2PO4- se denomina:", options:["Dihidrogenofosfato","Hidrogenofosfato","Pirofosfato","Fosfito"], ans:0, tip:"Revisar nomenclatura de aniones ácidos."},
+          {type:"mc", topic:"Aniones", q:"El ion P2O7 4- se denomina:", options:["Pirofosfato","Ortofosfato","Hidrogenofosfato","Fosfuro"], ans:0, tip:"Revisar aniones derivados de piroácidos."}
+        ]
+      },
+      equilibrio: {
+        title: "Equilibrio químico",
+        short: "Equilibrio",
+        container: "questions-equilibrio",
+        questions: [
+          {type:"mc", topic:"Kc", q:"Para N2(g) + 3 H2(g) ⇌ 2 NH3(g), la expresión de Kc es:", options:["[NH3]^2 / ([N2][H2]^3)","[N2][H2]^3 / [NH3]^2","[NH3] / ([N2][H2])","[N2] + [H2] / [NH3]"], ans:0, tip:"Revisar escritura de constantes de equilibrio."},
+          {type:"mc", topic:"Q y K", q:"Si Q < K, el sistema tiende a evolucionar:", options:["Hacia productos","Hacia reactivos","No evoluciona","Siempre precipita"], ans:0, tip:"Revisar comparación entre cociente de reacción y constante de equilibrio."},
+          {type:"mc", topic:"Equilibrio dinámico", q:"Un equilibrio químico dinámico significa que:", options:["Las velocidades directa e inversa son iguales","La reacción se detuvo completamente","No hay especies en solución","La constante cambia todo el tiempo"], ans:0, tip:"Revisar concepto de equilibrio dinámico."},
+          {type:"mc", topic:"Ion común", q:"En una solución saturada de AgCl, al agregar NaCl la solubilidad de AgCl:", options:["Disminuye","Aumenta","No cambia nunca","Se vuelve infinita"], ans:0, tip:"Revisar efecto del ion común."},
+          {type:"mc", topic:"pH", q:"¿Cuál de estas soluciones tendrá pH menor?", options:["HCl 0,10 M","NaOH 0,10 M","Agua pura","NaCl 0,10 M"], ans:0, tip:"Revisar fuerza ácido-base y escala de pH."},
+          {type:"num", topic:"pH", q:"Calcular el pH aproximado de HCl 0,010 M.", ans:2, tol:0.1, unit:"", tip:"Revisar pH de ácidos fuertes: pH = -log[H+]."},
+          {type:"num", topic:"pOH", q:"Calcular el pOH aproximado de NaOH 0,0010 M.", ans:3, tol:0.1, unit:"", tip:"Revisar pOH de bases fuertes: pOH = -log[OH-]."},
+          {type:"mc", topic:"Kps", q:"Si el Kps de una sal es muy pequeño, en general se espera que la sal sea:", options:["Poco soluble","Muy soluble","Siempre gaseosa","Un ácido fuerte"], ans:0, tip:"Revisar producto de solubilidad y solubilidad cualitativa."},
+          {type:"mc", topic:"Precipitación fraccionada", q:"Si se agrega Ag+ a una mezcla de Cl- e I-, precipita primero la sal que:", options:["Alcanza antes su Kps","Tiene mayor masa molar","Tiene mayor color","Tiene más sodio"], ans:0, tip:"Revisar criterio de precipitación según producto iónico y Kps."},
+          {type:"mc", topic:"Le Châtelier", q:"Para un equilibrio exotérmico, al aumentar la temperatura el equilibrio tiende a desplazarse:", options:["Hacia reactivos","Hacia productos","No cambia","Siempre hacia el lado con más moles"], ans:0, tip:"Revisar efecto de la temperatura en equilibrios exotérmicos."},
+          {type:"mc", topic:"Buffer", q:"Una solución reguladora está formada típicamente por:", options:["Ácido débil y su base conjugada","Ácido fuerte y base fuerte en exceso","Sal insoluble pura","Agua destilada solamente"], ans:0, tip:"Revisar composición básica de soluciones amortiguadoras."},
+          {type:"mc", topic:"Ácido débil", q:"Un ácido débil se caracteriza porque:", options:["Se ioniza parcialmente en agua","No contiene hidrógeno","Se ioniza totalmente siempre","Tiene pH igual a 7 siempre"], ans:0, tip:"Revisar diferencia entre ácido fuerte y ácido débil."},
+          {type:"mc", topic:"Complejos", q:"La formación de un complejo soluble puede modificar la solubilidad de un precipitado porque:", options:["Disminuye la concentración del ion libre","Elimina la masa del sistema","Cambia la temperatura necesariamente","Impide toda reacción ácido-base"], ans:0, tip:"Revisar equilibrio de complejación y concentración de ion libre."},
+          {type:"mc", topic:"Redox", q:"En una reacción redox, la especie que se oxida:", options:["Pierde electrones","Gana electrones","No cambia su número de oxidación","Siempre precipita"], ans:0, tip:"Revisar oxidación, reducción y números de oxidación."}
+        ]
+      }
+    };
+
+    const blockKeys = Object.keys(quiz);
+
+    function normalizeText(s) {
+      return String(s || "")
+        .trim()
+        .replace(/[₀０]/g,"0").replace(/[₁１]/g,"1").replace(/[₂２]/g,"2").replace(/[₃３]/g,"3")
+        .replace(/[₄４]/g,"4").replace(/[₅５]/g,"5").replace(/[₆６]/g,"6").replace(/[₇７]/g,"7")
+        .replace(/[₈８]/g,"8").replace(/[₉９]/g,"9")
+        .replace(/\s+/g,"")
+        .toLowerCase();
+    }
+
+    function parseNumber(value) {
+      if (value === undefined || value === null) return NaN;
+      return Number(String(value).replace(",", ".").replace(/[^0-9.\-]/g, ""));
+    }
+
+    function renderQuestions() {
+      blockKeys.forEach(key => {
+        const block = quiz[key];
+        const target = document.getElementById(block.container);
+        target.innerHTML = "";
+        block.questions.forEach((item, idx) => {
+          const qid = `${key}_${idx}`;
+          const div = document.createElement("div");
+          div.className = "question";
+          let html = `<span class="qmeta">${item.topic}</span><h4>${idx + 1}. ${item.q}</h4>`;
+          if (item.type === "mc") {
+            item.options.forEach((op, opIdx) => {
+              html += `<label class="option"><input type="radio" name="${qid}" value="${opIdx}"> ${op}</label>`;
+            });
+          } else if (item.type === "num") {
+            html += `<input type="text" name="${qid}" placeholder="Respuesta numérica ${item.unit ? '(' + item.unit + ')' : ''}">`;
+          } else {
+            html += `<input type="text" name="${qid}" placeholder="Escribir fórmula o nombre">`;
+          }
+          div.innerHTML = html;
+          target.appendChild(div);
+        });
+      });
+    }
+
+    function updateProgress() {
+      const pct = (currentStep / (steps.length - 1)) * 100;
+      document.getElementById("progressFill").style.width = pct + "%";
+      const labels = ["Inicio", "Soluciones", "Estequiometría", "Nomenclatura", "Equilibrio", "Devolución"];
+      document.getElementById("progressLabel").textContent = labels[currentStep];
+    }
+
+    function showStep(n) {
+      steps.forEach(id => document.getElementById(id).classList.remove("active"));
+      currentStep = Math.max(0, Math.min(n, steps.length - 1));
+      document.getElementById(steps[currentStep]).classList.add("active");
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function nextStep() { showStep(currentStep + 1); }
+    function prevStep() { showStep(currentStep - 1); }
+
+    function getAnswer(qid, type) {
+      if (type === "mc") {
+        const selected = document.querySelector(`input[name="${qid}"]:checked`);
+        return selected ? selected.value : "";
+      }
+      const input = document.querySelector(`input[name="${qid}"]`);
+      return input ? input.value : "";
+    }
+
+    function scoreBlock(key) {
+      const block = quiz[key];
+      let correct = 0;
+      const incorrectTopics = [];
+      block.questions.forEach((item, idx) => {
+        const qid = `${key}_${idx}`;
+        const value = getAnswer(qid, item.type);
+        let ok = false;
+        if (item.type === "mc") {
+          ok = Number(value) === item.ans;
+        } else if (item.type === "num") {
+          const n = parseNumber(value);
+          ok = !isNaN(n) && Math.abs(n - item.ans) <= item.tol;
+        } else {
+          const normalized = normalizeText(value);
+          ok = item.ans.map(normalizeText).includes(normalized);
+        }
+        if (ok) correct++;
+        else incorrectTopics.push({ topic: item.topic, tip: item.tip });
+      });
+      return { correct, total: block.questions.length, pct: correct / block.questions.length, incorrectTopics };
+    }
+
+    function level(pct) {
+      if (pct >= 0.80) return { label:"Manejo suficiente", cls:"ok" };
+      if (pct >= 0.60) return { label:"Manejo parcial", cls:"mid" };
+      return { label:"Dificultad importante", cls:"low" };
+    }
+
+    function uniqueTips(items) {
+      const seen = new Set();
+      return items.filter(x => {
+        const key = x.topic + x.tip;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function finishQuiz() {
+      const results = {};
+      let totalCorrect = 0;
+      let totalQuestions = 0;
+      blockKeys.forEach(key => {
+        results[key] = scoreBlock(key);
+        totalCorrect += results[key].correct;
+        totalQuestions += results[key].total;
+      });
+
+      const name = document.getElementById("studentName").value.trim() || "Estudiante";
+      const course = document.getElementById("studentCourse").value.trim() || "Sin comisión informada";
+      const sid = document.getElementById("studentId").value.trim();
+      const today = new Date().toLocaleDateString("es-AR");
+      document.getElementById("studentLine").innerHTML = `<strong>${name}</strong> · ${course}${sid ? " · " + sid : ""} · ${today}`;
+
+      const overallPct = totalCorrect / totalQuestions;
+      const overallLevel = level(overallPct);
+      document.getElementById("overallResult").innerHTML = `<strong>Resultado global:</strong> ${totalCorrect}/${totalQuestions} respuestas correctas (${Math.round(overallPct * 100)}%). <strong>${overallLevel.label}.</strong>`;
+
+      const grid = document.getElementById("resultsGrid");
+      grid.innerHTML = "";
+      blockKeys.forEach(key => {
+        const block = quiz[key];
+        const r = results[key];
+        const lv = level(r.pct);
+        grid.innerHTML += `<div class="score-card"><span>${block.short}</span><strong>${r.correct}/${r.total}</strong><span class="tag ${lv.cls}">${lv.label}</span></div>`;
+      });
+
+      const details = document.getElementById("feedbackDetails");
+      details.innerHTML = "";
+      blockKeys.forEach(key => {
+        const block = quiz[key];
+        const r = results[key];
+        const lv = level(r.pct);
+        const tips = uniqueTips(r.incorrectTopics).slice(0, 6);
+        let priority = lv.cls === "low" ? "Prioridad alta" : (lv.cls === "mid" ? "Prioridad media" : "Prioridad baja");
+        let text = `<div class="feedback-block"><h4>${block.title} · ${priority}</h4><p><strong>${lv.label}:</strong> ${r.correct} de ${r.total} respuestas correctas.</p>`;
+        if (tips.length) {
+          text += `<p>Conviene repasar especialmente:</p><ul>`;
+          tips.forEach(t => text += `<li>${t.tip}</li>`);
+          text += `</ul>`;
+        } else {
+          text += `<p>El desempeño en este bloque es suficiente. Conviene mantener práctica, pero no aparece como el primer foco de refuerzo.</p>`;
+        }
+        if (key === "soluciones") text += `<p>Este bloque impacta directamente en preparación de soluciones, diluciones, sensibilidad, expresión de resultados y cálculos cuantitativos.</p>`;
+        if (key === "estequiometria") text += `<p>Este bloque es clave para volumetrías, gravimetría, patrones, relaciones analito-reactivo, pureza y rendimiento.</p>`;
+        if (key === "nomenclatura") text += `<p>Este bloque sostiene la identificación de especies, la escritura de reacciones, los equilibrios, la precipitación, los complejos y redox.</p>`;
+        if (key === "equilibrio") text += `<p>Este bloque será usado durante toda la materia en ácido-base, precipitación, complejación, redox y selección de condiciones analíticas.</p>`;
+        text += `</div>`;
+        details.innerHTML += text;
+      });
+
+      showStep(5);
+    }
+
+    function downloadPDF() {
+      // Opción robusta sin dependencias externas: abre el diálogo de impresión.
+      // En cualquier navegador moderno, el estudiante puede elegir "Guardar como PDF".
+      window.print();
+    }
+
+    function restartQuiz() {
+      document.querySelectorAll('input[type="radio"]').forEach(i => i.checked = false);
+      document.querySelectorAll('input[type="text"]').forEach(i => {
+        if (!["studentName", "studentCourse", "studentId"].includes(i.id)) i.value = "";
+      });
+      showStep(0);
+    }
+
+    renderQuestions();
+    updateProgress();
+  </script>
+</body>
+</html>
